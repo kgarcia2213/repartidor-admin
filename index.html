@@ -1,117 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Admin - Repartos TM</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo - Repartos TM</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- SheetJS (xlsx) para leer Excel en el navegador -->
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
   <header>
-    <h1>Admin — Repartos TM</h1>
+    <h1>📦 Repartos TM - Panel Admin</h1>
     <nav>
-      <button data-tab="clientes" class="active">Clientes</button>
-      <button data-tab="repartidores">Repartidores</button>
-      <button data-tab="pedidos">Pedidos</button>
-      <button data-tab="entregas">Entregas</button>
-      <button data-tab="rutas">Rutas</button>
+      <button onclick="mostrarSeccion('clientes')">Clientes</button>
+      <button onclick="mostrarSeccion('repartidores')">Repartidores</button>
+      <button onclick="mostrarSeccion('pedidos')">Pedidos</button>
+      <button onclick="mostrarSeccion('entregas')">Entregas</button>
+      <button onclick="mostrarSeccion('rutas')">Rutas</button>
     </nav>
   </header>
 
   <main>
     <!-- Clientes -->
-    <section id="clientes" class="tab active">
+    <section id="clientes" class="seccion activa">
       <h2>Clientes</h2>
-      <form id="clienteForm" class="form-inline">
-        <input name="id" type="hidden">
-        <input name="nombre" placeholder="Nombre" required>
-        <input name="telefono" placeholder="Teléfono">
-        <input name="direccion" placeholder="Dirección">
+      <form id="formClientes" onsubmit="guardarCliente(event)">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="telefono" placeholder="Teléfono">
+        <input type="text" name="direccion" placeholder="Dirección">
         <button type="submit">Guardar</button>
-        <button type="button" id="clienteReset">Nuevo</button>
-        <input type="file" id="clientesFile" accept=".xlsx,.xls,.csv">
-        <button type="button" id="importClientes">Importar Excel</button>
       </form>
-      <div class="table-wrap"><table id="clientesTable"><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Dirección</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+      <input type="file" id="excelClientes" onchange="importarExcel('clientes')">
+      <table id="tablaClientes"></table>
     </section>
 
     <!-- Repartidores -->
-    <section id="repartidores" class="tab">
+    <section id="repartidores" class="seccion">
       <h2>Repartidores</h2>
-      <form id="repartidorForm" class="form-inline">
-        <input name="id" type="hidden">
-        <input name="nombre" placeholder="Nombre" required>
-        <input name="telefono" placeholder="Teléfono">
-        <input name="vehiculo" placeholder="Vehículo">
+      <form id="formRepartidores" onsubmit="guardarRepartidor(event)">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="telefono" placeholder="Teléfono">
+        <input type="text" name="vehiculo" placeholder="Vehículo">
         <button type="submit">Guardar</button>
-        <button type="button" id="repartidorReset">Nuevo</button>
-        <input type="file" id="repartidoresFile" accept=".xlsx,.xls,.csv">
-        <button type="button" id="importRepartidores">Importar Excel</button>
       </form>
-      <div class="table-wrap"><table id="repartidoresTable"><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Vehículo</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+      <input type="file" id="excelRepartidores" onchange="importarExcel('repartidores')">
+      <table id="tablaRepartidores"></table>
     </section>
 
     <!-- Pedidos -->
-    <section id="pedidos" class="tab">
+    <section id="pedidos" class="seccion">
       <h2>Pedidos</h2>
-      <form id="pedidoForm" class="form-inline">
-        <input name="id" type="hidden">
-        <select name="cliente_id" required><option value="">Seleccionar cliente</option></select>
-        <select name="repartidor_id"><option value="">Asignar repartidor (opcional)</option></select>
-        <input name="direccion" placeholder="Dirección" required>
-        <input name="descripcion" placeholder="Descripción">
-        <select name="estado"><option>Pendiente</option><option>En camino</option><option>Entregado</option></select>
-        <input name="fecha_entrega" type="date">
+      <form id="formPedidos" onsubmit="guardarPedido(event)">
+        <input type="number" name="cliente_id" placeholder="ID Cliente" required>
+        <input type="text" name="direccion" placeholder="Dirección">
+        <input type="text" name="estado" placeholder="Estado" value="Pendiente">
         <button type="submit">Guardar</button>
-        <button type="button" id="pedidoReset">Nuevo</button>
-        <input type="file" id="pedidosFile" accept=".xlsx,.xls,.csv">
-        <button type="button" id="importPedidos">Importar Excel</button>
       </form>
-      <div class="table-wrap"><table id="pedidosTable"><thead><tr><th>ID</th><th>Cliente</th><th>Repartidor</th><th>Dirección</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+      <input type="file" id="excelPedidos" onchange="importarExcel('pedidos')">
+      <table id="tablaPedidos"></table>
     </section>
 
     <!-- Entregas -->
-    <section id="entregas" class="tab">
+    <section id="entregas" class="seccion">
       <h2>Entregas</h2>
-      <form id="entregaForm" class="form-inline">
-        <input name="id" type="hidden">
-        <select name="pedido_id"><option value="">Pedido</option></select>
-        <select name="repartidor_id"><option value="">Repartidor</option></select>
-        <input name="fecha_salida" type="datetime-local">
-        <input name="fecha_entrega" type="datetime-local">
-        <input name="status" placeholder="Estado">
-        <input name="comentario" placeholder="Comentario">
-        <button type="submit">Guardar</button>
-        <button type="button" id="entregaReset">Nuevo</button>
-        <input type="file" id="entregasFile" accept=".xlsx,.xls,.csv">
-        <button type="button" id="importEntregas">Importar Excel</button>
-      </form>
-      <div class="table-wrap"><table id="entregasTable"><thead><tr><th>ID</th><th>Pedido</th><th>Repartidor</th><th>F. Entrega</th><th>Status</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+      <table id="tablaEntregas"></table>
     </section>
 
     <!-- Rutas -->
-    <section id="rutas" class="tab">
+    <section id="rutas" class="seccion">
       <h2>Rutas</h2>
-      <form id="rutaForm" class="form-inline">
-        <input name="id" type="hidden">
-        <select name="repartidor_id"><option value="">Repartidor</option></select>
-        <input name="fecha" type="date">
-        <input name="lista_de_pedidos" placeholder='Lista IDs JSON: ["1","2"]'>
+      <form id="formRutas" onsubmit="guardarRuta(event)">
+        <input type="number" name="repartidor_id" placeholder="ID Repartidor">
+        <input type="date" name="fecha" required>
+        <input type="text" name="lista_de_pedidos" placeholder="Lista pedidos (1,2,3)">
         <button type="submit">Guardar</button>
-        <button type="button" id="rutaReset">Nuevo</button>
-        <input type="file" id="rutasFile" accept=".xlsx,.xls,.csv">
-        <button type="button" id="importRutas">Importar Excel</button>
       </form>
-      <div class="table-wrap"><table id="rutasTable"><thead><tr><th>ID</th><th>Repartidor</th><th>Fecha</th><th>Lista pedidos</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+      <table id="tablaRutas"></table>
     </section>
   </main>
 
-  <footer>
-    <small>Admin panel — Repartos TM</small>
-  </footer>
-
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="api.js"></script>
+  <script src="excel.js"></script>
   <script src="admin.js"></script>
+
 </body>
 </html>
