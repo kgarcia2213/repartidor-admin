@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin - Repartos TM</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS (xlsx) para leer Excel en el navegador -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Admin — Repartos TM</h1>
+    <nav>
+      <button data-tab="clientes" class="active">Clientes</button>
+      <button data-tab="repartidores">Repartidores</button>
+      <button data-tab="pedidos">Pedidos</button>
+      <button data-tab="entregas">Entregas</button>
+      <button data-tab="rutas">Rutas</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Clientes -->
+    <section id="clientes" class="tab active">
+      <h2>Clientes</h2>
+      <form id="clienteForm" class="form-inline">
+        <input name="id" type="hidden">
+        <input name="nombre" placeholder="Nombre" required>
+        <input name="telefono" placeholder="Teléfono">
+        <input name="direccion" placeholder="Dirección">
+        <button type="submit">Guardar</button>
+        <button type="button" id="clienteReset">Nuevo</button>
+        <input type="file" id="clientesFile" accept=".xlsx,.xls,.csv">
+        <button type="button" id="importClientes">Importar Excel</button>
+      </form>
+      <div class="table-wrap"><table id="clientesTable"><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Dirección</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Repartidores -->
+    <section id="repartidores" class="tab">
+      <h2>Repartidores</h2>
+      <form id="repartidorForm" class="form-inline">
+        <input name="id" type="hidden">
+        <input name="nombre" placeholder="Nombre" required>
+        <input name="telefono" placeholder="Teléfono">
+        <input name="vehiculo" placeholder="Vehículo">
+        <button type="submit">Guardar</button>
+        <button type="button" id="repartidorReset">Nuevo</button>
+        <input type="file" id="repartidoresFile" accept=".xlsx,.xls,.csv">
+        <button type="button" id="importRepartidores">Importar Excel</button>
+      </form>
+      <div class="table-wrap"><table id="repartidoresTable"><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Vehículo</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Pedidos -->
+    <section id="pedidos" class="tab">
+      <h2>Pedidos</h2>
+      <form id="pedidoForm" class="form-inline">
+        <input name="id" type="hidden">
+        <select name="cliente_id" required><option value="">Seleccionar cliente</option></select>
+        <select name="repartidor_id"><option value="">Asignar repartidor (opcional)</option></select>
+        <input name="direccion" placeholder="Dirección" required>
+        <input name="descripcion" placeholder="Descripción">
+        <select name="estado"><option>Pendiente</option><option>En camino</option><option>Entregado</option></select>
+        <input name="fecha_entrega" type="date">
+        <button type="submit">Guardar</button>
+        <button type="button" id="pedidoReset">Nuevo</button>
+        <input type="file" id="pedidosFile" accept=".xlsx,.xls,.csv">
+        <button type="button" id="importPedidos">Importar Excel</button>
+      </form>
+      <div class="table-wrap"><table id="pedidosTable"><thead><tr><th>ID</th><th>Cliente</th><th>Repartidor</th><th>Dirección</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Entregas -->
+    <section id="entregas" class="tab">
+      <h2>Entregas</h2>
+      <form id="entregaForm" class="form-inline">
+        <input name="id" type="hidden">
+        <select name="pedido_id"><option value="">Pedido</option></select>
+        <select name="repartidor_id"><option value="">Repartidor</option></select>
+        <input name="fecha_salida" type="datetime-local">
+        <input name="fecha_entrega" type="datetime-local">
+        <input name="status" placeholder="Estado">
+        <input name="comentario" placeholder="Comentario">
+        <button type="submit">Guardar</button>
+        <button type="button" id="entregaReset">Nuevo</button>
+        <input type="file" id="entregasFile" accept=".xlsx,.xls,.csv">
+        <button type="button" id="importEntregas">Importar Excel</button>
+      </form>
+      <div class="table-wrap"><table id="entregasTable"><thead><tr><th>ID</th><th>Pedido</th><th>Repartidor</th><th>F. Entrega</th><th>Status</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- Rutas -->
+    <section id="rutas" class="tab">
+      <h2>Rutas</h2>
+      <form id="rutaForm" class="form-inline">
+        <input name="id" type="hidden">
+        <select name="repartidor_id"><option value="">Repartidor</option></select>
+        <input name="fecha" type="date">
+        <input name="lista_de_pedidos" placeholder='Lista IDs JSON: ["1","2"]'>
+        <button type="submit">Guardar</button>
+        <button type="button" id="rutaReset">Nuevo</button>
+        <input type="file" id="rutasFile" accept=".xlsx,.xls,.csv">
+        <button type="button" id="importRutas">Importar Excel</button>
+      </form>
+      <div class="table-wrap"><table id="rutasTable"><thead><tr><th>ID</th><th>Repartidor</th><th>Fecha</th><th>Lista pedidos</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Admin panel — Repartos TM</small>
+  </footer>
+
+  <script src="admin.js"></script>
+</body>
+</html>
